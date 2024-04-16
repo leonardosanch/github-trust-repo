@@ -1,9 +1,8 @@
-name: S3 sync action
+name: S3 Sync Action
 
-on: 
+on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   workflow_dispatch:
 
 permissions:
@@ -13,16 +12,16 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      
-      - name: Connect to AWS
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-session-name: awssyncsession
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          role-session-name: awssyncsession
           aws-region: ${{ secrets.AWS_REGION }}
-    
-      - name: sync bucket
-        run: aws s3 sync ./files/ s3://${{ secrets.AWS_BUCKET_NAME }} --delete 
+
+      - name: Sync S3 bucket
+        run: aws s3 sync ./files/ s3://${{ secrets.AWS_BUCKET_NAME }} --delete
